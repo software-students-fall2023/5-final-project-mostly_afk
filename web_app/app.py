@@ -1,15 +1,19 @@
 """
 This is a web-app ... 
 """
+import os
 import logging
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify, session
 from flask_cors import CORS
 import requests
 from flask_session import Session
 from requests.exceptions import RequestException
 
+load_dotenv()
+
 app = Flask(__name__)
-app.secret_key = "your_secret_key"
+app.secret_key = os.getenv("APP_SECRET_KEY")
 CORS(app)
 logging.basicConfig(level=logging.INFO)
 app.config["SESSION_TYPE"] = "filesystem"
