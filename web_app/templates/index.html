@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat</title>
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body onload="document.getElementById('user_input').focus();">
+    <header> 
+        <h1>Test</h1>
+    </header>
+    <main class="chat-container" role="main">
+        <h2>Try chatting with me</h2>
+        <section class="chat-box" aria-label="Chat messages" aria-live="polite">
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="message {% if msg.type == 'User' %}user{% else %}ai{% endif %}">
+                        {{ msg.content }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </section>
+        <form method="POST" class="message-form" aria-label="Send a message">
+            <input type="text" id="user_input" name="user_input" placeholder="Write your message here..." class="input-field">
+            <button type="submit" class="send-button">Send</button>
+        </form>
+    </main>
+
+    <script>
+        $(document).ready(function() {
+            let sessionCleared = false;
+        
+            function clearSession() {
+                if (!sessionCleared) {
+                    fetch('/clear_session', {
+                        method: 'POST'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            sessionCleared = true;
+                        } else {
+                            console.error('Failed to clear the session.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error clearing the session:', error);
+                    });
+                }
+            }
+        
+            window.addEventListener('beforeunload', clearSession);
+            window.addEventListener('unload', clearSession);
+        
+            $('.message-form').on('submit', function(e) {
+                e.preventDefault();
+                let userInput = $('#user_input').val();
+                $('#user_input').val('');
+                if (userInput.trim() !== '') {
+                    $('.chat-box').append('<div class="message user">' + userInput + '</div>');
+                    $.post('/get_response', { user_input: userInput }, function(response) {
+                        $('.chat-box').append('<div class="message ai">' + response + '</div>');
+                    });
+                }
+            });
+        });
+        </script>
+        
+    <footer>
+        <p>&copy; 2023 Test. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+
+
+
+
+

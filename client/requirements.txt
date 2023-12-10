@@ -1,0 +1,6 @@
+Flask==3.0.0
+Werkzeug==3.0.0
+Flask-Cors==3.0.10
+openai 
+langchain==0.0.348
+python-dotenv==0.16.0
