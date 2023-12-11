@@ -27,9 +27,9 @@ $(document).ready(function() {
     window.addEventListener('beforeunload', clearSession);
     window.addEventListener('unload', clearSession);
     
-    $('.personality-button').click(function() {
+    $('.sidebar-item').click(function() {
         selectedPersonality = $(this).data('personality');
-        $('.personality-button').removeClass('active');
+        $('.sidebar-item').removeClass('active');
         $(this).addClass('active');
         $('.chat-box').empty();
         $('.chat-title').text(selectedPersonality);
