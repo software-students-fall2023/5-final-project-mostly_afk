@@ -5,6 +5,20 @@ body {
     padding: 20px;
 }
 
+.personality-button {
+    margin: 5px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.personality-button.active {
+    background-color: #007bff;
+    color: white;
+}
+
 .chat-container {
     max-width: 400px;
     width: 100%;

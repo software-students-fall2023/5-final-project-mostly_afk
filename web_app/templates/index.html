@@ -10,6 +10,13 @@
     <header> 
         <h1>Test</h1>
     </header>
+    <div class="personality-buttons">
+        <button class="personality-button" data-personality="helpful">Helpful</button>
+        <button class="personality-button" data-personality="unhelpful">Unhelpful</button>
+        <button class="personality-button" data-personality="sarcastic">Sarcastic</button>
+        <button class="personality-button" data-personality="wise">Wise</button>
+        <button class="personality-button" data-personality="tsundere">Tsundere</button>
+    </div>    
     <main class="chat-container" role="main">
         <h2>Try chatting with me</h2>
         <section class="chat-box" aria-label="Chat messages" aria-live="polite">
@@ -30,6 +37,7 @@
     <script>
         $(document).ready(function() {
             let sessionCleared = false;
+            let selectedPersonality = "helpful";
         
             function clearSession() {
                 if (!sessionCleared) {
@@ -51,16 +59,25 @@
         
             window.addEventListener('beforeunload', clearSession);
             window.addEventListener('unload', clearSession);
-        
+            
+            $('.personality-button').click(function() {
+                selectedPersonality = $(this).data('personality');
+                $('.personality-button').removeClass('active');
+                $(this).addClass('active');
+            });
+
             $('.message-form').on('submit', function(e) {
                 e.preventDefault();
                 let userInput = $('#user_input').val();
                 $('#user_input').val('');
                 if (userInput.trim() !== '') {
                     $('.chat-box').append('<div class="message user">' + userInput + '</div>');
-                    $.post('/get_response', { user_input: userInput }, function(response) {
+                    $.post('/get_response', { user_input: userInput, personality: selectedPersonality }, function(response) {
                         $('.chat-box').append('<div class="message ai">' + response + '</div>');
                     });
+                    // $.post('/get_response', { user_input: userInput }, function(response) {
+                    //     $('.chat-box').append('<div class="message ai">' + response + '</div>');
+                    // });
                 }
             });
         });

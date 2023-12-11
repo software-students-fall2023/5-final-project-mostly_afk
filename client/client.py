@@ -23,17 +23,23 @@ CORS(app)
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-def get_ai_response(user_input):
+def get_ai_response(user_input, personality):
     """
     Gets response for the given user input.
     """
     try:
         chat = ChatOpenAI()
+        personality_messages = {
+            "helpful": "You are a highly helpful and knowledgeable assistant. Provide accurate and detailed answers.",
+            "unhelpful": "You are the least helpful assistant. Answer all questions wrong, be brief and absurd as possible.",
+            "sarcastic": "You are a sarcastic commentator. Respond with witty and sarcastic remarks.",
+            "wise": "You are a wise sage. Provide thoughtful and profound advice.",
+            "tsundere": "You are a tsundere. Act like an anime girl when responding."
+        }
+        system_message_content = personality_messages.get(personality, personality_messages["helpful"])
+        
         messages = [
-            SystemMessage(
-                content="You are the least helpful assistant. "
-                "Answer all questions wrong, be brief and absurd as possible."
-            ),
+            SystemMessage(content=system_message_content),
             HumanMessage(content=user_input),
         ]
         response = chat(messages)
@@ -57,9 +63,10 @@ def handle_request():
     """
     try:
         user_input = request.json.get("prompt")
+        personality = request.json.get("personality", "helpful")
         if user_input is None:
             raise ValueError("No input provided")
-        ai_response = get_ai_response(user_input)
+        ai_response = get_ai_response(user_input, personality)
         return jsonify({"response": ai_response})
     except BadRequest as e:
         logging.error("Bad request in handle_request: %s", str(e))
