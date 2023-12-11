@@ -10,62 +10,71 @@
     <header> 
         <h1>Test</h1>
     </header>
-    <main class="chat-container" role="main">
-        <h2>Try chatting with me</h2>
-        <section class="chat-box" aria-label="Chat messages" aria-live="polite">
-            {% if messages %}
-                {% for msg in messages %}
-                    <div class="message {% if msg.type == 'User' %}user{% else %}ai{% endif %}">
-                        {{ msg.content }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </section>
-        <form method="POST" class="message-form" aria-label="Send a message">
-            <input type="text" id="user_input" name="user_input" placeholder="Write your message here..." class="input-field">
-            <button type="submit" class="send-button">Send</button>
-        </form>
-    </main>
-
-    <script>
-        $(document).ready(function() {
-            let sessionCleared = false;
-        
-            function clearSession() {
-                if (!sessionCleared) {
-                    fetch('/clear_session', {
-                        method: 'POST'
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            sessionCleared = true;
-                        } else {
-                            console.error('Failed to clear the session.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error clearing the session:', error);
-                    });
-                }
-            }
-        
-            window.addEventListener('beforeunload', clearSession);
-            window.addEventListener('unload', clearSession);
-        
-            $('.message-form').on('submit', function(e) {
-                e.preventDefault();
-                let userInput = $('#user_input').val();
-                $('#user_input').val('');
-                if (userInput.trim() !== '') {
-                    $('.chat-box').append('<div class="message user">' + userInput + '</div>');
-                    $.post('/get_response', { user_input: userInput }, function(response) {
-                        $('.chat-box').append('<div class="message ai">' + response + '</div>');
-                    });
-                }
-            });
-        });
-        </script>
-        
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-item" data-personality="Helpful Mom">
+                <img class="sidebar-icon" src="../static/images/helpful.png" alt="Helpful Mom">
+                <span class="sidebar-text">Helpful Mom</span>
+            </div>
+            <div class="sidebar-item" data-personality="Unhelpful Angsty Teen">
+                <img class="sidebar-icon" src="../static/images/unhelpful.png" alt="Unhelpful Angsty Teen">
+                <span class="sidebar-text">Unhelpful Angsty Teen</span>
+            </div>
+            <div class="sidebar-item" data-personality="Sarcastic Friend">
+                <img class="sidebar-icon" src="../static/images/sarcastic.png" alt="Sarcastic Friend">
+                <span class="sidebar-text">Sarcastic Friend</span>
+            </div>
+            <div class="sidebar-item" data-personality="Emo Discord Mod">
+                <img class="sidebar-icon" src="../static/images/emo.png" alt="Emo Discord Mod">
+                <span class="sidebar-text">Emo Discord Mod</span>
+            </div>
+            <div class="sidebar-item" data-personality="Wise Old Wizard">
+                <img class="sidebar-icon" src="../static/images/wise.png" alt="Wise Old Wizard">
+                <span class="sidebar-text">Wise Old Wizard</span>
+            </div>
+            <div class="sidebar-item" data-personality="Tsundere">
+                <img class="sidebar-icon" src="../static/images/tsundere.png" alt="Tsundere">
+                <span class="sidebar-text">Tsundere</span>
+            </div>
+            <div class="sidebar-item" data-personality="Mysterious Vampire">
+                <img class="sidebar-icon" src="../static/images/vampire.png" alt="Mysterious Vampire">
+                <span class="sidebar-text">Mysterious Vampire</span>
+            </div>
+            <div class="sidebar-item" data-personality="Charming Rogue">
+                <img class="sidebar-icon" src="../static/images/charming.png" alt="Charming Rogue">
+                <span class="sidebar-text">Charming Rogue</span>
+            </div>
+        </div>
+            <!-- <div class="personality-buttons">
+                <button class="personality-button" data-personality="Helpful Mom" id="helpful-button"></button>
+                <button class="personality-button" data-personality="Unhelpful Angsty Teen" id="unhelpful-button"></button>
+                <button class="personality-button" data-personality="Sarcastic Friend" id="sarcastic-button"></button>
+                <button class="personality-button" data-personality="Emo Discord Mod" id="emo-button"></button>
+                <button class="personality-button" data-personality="Wise Old Wizard" id="wise-button"></button>
+                <button class="personality-button" data-personality="Tsundere" id="tsundere-button"></button>
+                <button class="personality-button" data-personality="Mysterious Vampire" id="vampire-button"></button>
+                <button class="personality-button" data-personality="Charming Rogue" id="charming-button"></button>
+            </div>     -->
+        <main class="chat-container" role="main">
+            <div class="chat-header">
+                <div class="chat-title">Helpful Mom</div>
+            </div>
+            <section class="chat-box" aria-label="Chat messages" aria-live="polite">
+                {% if messages %}
+                    {% for msg in messages %}
+                        <div class="message {% if msg.type == 'User' %}user{% else %}ai{% endif %}">
+                            {{ msg.content }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </section>
+            <form method="POST" class="message-form" aria-label="Send a message">
+                <input type="text" id="user_input" name="user_input" placeholder="Write your message here..." class="input-field">
+                <button type="submit" class="send-button">Send</button>
+            </form>
+        </main>
+    </div>
+    <script src="../static/script.js"></script>
     <footer>
         <p>&copy; 2023 Test. All rights reserved.</p>
     </footer>

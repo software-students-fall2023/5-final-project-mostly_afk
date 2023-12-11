@@ -42,9 +42,10 @@ def get_response():
     Get response for user input.
     """
     user_input = request.form.get("user_input")
+    personality = request.form.get("personality", "helpful")
     try:
         response = requests.post(
-            "http://client:5002/get_response", json={"prompt": user_input}, timeout=10
+            "http://client:5002/get_response", json={"prompt": user_input, "personality": personality}, timeout=10
         )
         response.raise_for_status()
         ai_response = response.json().get("response")
