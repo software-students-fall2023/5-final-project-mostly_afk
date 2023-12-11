@@ -12,10 +12,12 @@
     </header>
     <div class="personality-buttons">
         <button class="personality-button" data-personality="helpful">Helpful</button>
-        <button class="personality-button" data-personality="unhelpful">Unhelpful</button>
-        <button class="personality-button" data-personality="sarcastic">Sarcastic</button>
-        <button class="personality-button" data-personality="wise">Wise</button>
+        <button class="personality-button" data-personality="unhelpful">Unhelpful Bot</button>
+        <button class="personality-button" data-personality="sarcastic">Sarcastic Friend</button>
+        <button class="personality-button" data-personality="wise">Wise Old Wizard</button>
         <button class="personality-button" data-personality="tsundere">Tsundere</button>
+        <button class="personality-button" data-personality="vampire">Mysterious Vampire</button>
+        <button class="personality-button" data-personality="charming">Charming Rogue</button>
     </div>    
     <main class="chat-container" role="main">
         <h2>Try chatting with me</h2>
@@ -33,56 +35,7 @@
             <button type="submit" class="send-button">Send</button>
         </form>
     </main>
-
-    <script>
-        $(document).ready(function() {
-            let sessionCleared = false;
-            let selectedPersonality = "helpful";
-        
-            function clearSession() {
-                if (!sessionCleared) {
-                    fetch('/clear_session', {
-                        method: 'POST'
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            sessionCleared = true;
-                        } else {
-                            console.error('Failed to clear the session.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error clearing the session:', error);
-                    });
-                }
-            }
-        
-            window.addEventListener('beforeunload', clearSession);
-            window.addEventListener('unload', clearSession);
-            
-            $('.personality-button').click(function() {
-                selectedPersonality = $(this).data('personality');
-                $('.personality-button').removeClass('active');
-                $(this).addClass('active');
-            });
-
-            $('.message-form').on('submit', function(e) {
-                e.preventDefault();
-                let userInput = $('#user_input').val();
-                $('#user_input').val('');
-                if (userInput.trim() !== '') {
-                    $('.chat-box').append('<div class="message user">' + userInput + '</div>');
-                    $.post('/get_response', { user_input: userInput, personality: selectedPersonality }, function(response) {
-                        $('.chat-box').append('<div class="message ai">' + response + '</div>');
-                    });
-                    // $.post('/get_response', { user_input: userInput }, function(response) {
-                    //     $('.chat-box').append('<div class="message ai">' + response + '</div>');
-                    // });
-                }
-            });
-        });
-        </script>
-        
+    <script src="../static/script.js"></script>
     <footer>
         <p>&copy; 2023 Test. All rights reserved.</p>
     </footer>

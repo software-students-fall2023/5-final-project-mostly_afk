@@ -5,13 +5,32 @@ body {
     padding: 20px;
 }
 
-.personality-button {
+/* .personality-button {
     margin: 5px;
     padding: 10px;
     border: none;
     border-radius: 5px;
     background-color: #f0f0f0;
     cursor: pointer;
+} */
+
+.personality-button {
+    display: block;
+    width: 100%; /* Make buttons full width */
+    margin: 5px 0; /* Adjust as needed */
+    padding: 10px;
+    border: none;
+    border-radius: 10px; /* More rounded corners */
+    background-color: #f0f0f0;
+    color: #000; /* Text color */
+    text-align: left; /* Align text to the left */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Optional: adds subtle shadow */
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+.personality-button:hover {
+    background-color: #e0e0e0; /* Slight change on hover */
 }
 
 .personality-button.active {
@@ -20,8 +39,9 @@ body {
 }
 
 .chat-container {
-    max-width: 400px;
+    max-width: 600px;
     width: 100%;
+    height: 400px;
     margin: auto;
     border: 1px solid #ddd;
     padding: 20px;
