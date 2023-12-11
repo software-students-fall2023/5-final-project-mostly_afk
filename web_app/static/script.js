@@ -32,6 +32,7 @@ $(document).ready(function() {
         $('.personality-button').removeClass('active');
         $(this).addClass('active');
         $('.chat-box').empty();
+        $('.chat-title').text(selectedPersonality);
         scrollToBottom();
     });
 

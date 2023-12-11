@@ -11,16 +11,19 @@
         <h1>Test</h1>
     </header>
     <div class="personality-buttons">
-        <button class="personality-button" data-personality="helpful">Helpful</button>
-        <button class="personality-button" data-personality="unhelpful">Unhelpful Bot</button>
-        <button class="personality-button" data-personality="sarcastic">Sarcastic Friend</button>
-        <button class="personality-button" data-personality="wise">Wise Old Wizard</button>
-        <button class="personality-button" data-personality="tsundere">Tsundere</button>
-        <button class="personality-button" data-personality="vampire">Mysterious Vampire</button>
-        <button class="personality-button" data-personality="charming">Charming Rogue</button>
+        <button class="personality-button" data-personality="Helpful Mom">Helpful Mom</button>
+        <button class="personality-button" data-personality="Unhelpful Angsty Teen">Unhelpful Angsty Teen</button>
+        <button class="personality-button" data-personality="Sarcastic Friend">Sarcastic Friend</button>
+        <button class="personality-button" data-personality="Emo Discord Mod">Emo Discord Mod</button>
+        <button class="personality-button" data-personality="Wise Old Wizard">Wise Old Wizard</button>
+        <button class="personality-button" data-personality="Tsundere">Tsundere</button>
+        <button class="personality-button" data-personality="Mysterious Vampire">Mysterious Vampire</button>
+        <button class="personality-button" data-personality="Charming Rogue">Charming Rogue</button>
     </div>    
     <main class="chat-container" role="main">
-        <h2>Try chatting with me</h2>
+        <div class="chat-header">
+            <div class="chat-title">Helpful Mom</div>
+        </div>
         <section class="chat-box" aria-label="Chat messages" aria-live="polite">
             {% if messages %}
                 {% for msg in messages %}
