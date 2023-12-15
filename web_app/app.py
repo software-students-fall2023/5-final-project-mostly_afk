@@ -45,7 +45,7 @@ def get_response():
     personality = request.form.get("personality", "helpful")
     try:
         response = requests.post(
-            "http://client:5002/get_response", json={"prompt": user_input, "personality": personality}, timeout=10
+            "http://client:5002/get_response", json={"prompt": user_input, "personality": personality}, timeout=60
         )
         response.raise_for_status()
         ai_response = response.json().get("response")
