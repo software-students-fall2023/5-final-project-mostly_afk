@@ -4,3 +4,4 @@ Flask-Cors==3.0.10
 openai 
 langchain==0.0.348
 python-dotenv==0.16.0
+pymongo==4.5.0
