@@ -1,79 +1,98 @@
-$(document).ready(function() {
-    let sessionCleared = false;
-    let selectedPersonality = "helpful";
+$(document).ready(function () {
+    let selectedPersonality = "Helpful Mom";
+    let conversationHistories = {};
 
     function scrollToBottom() {
         $('.chat-box').scrollTop($('.chat-box')[0].scrollHeight);
     }
 
-    function clearSession() {
-        if (!sessionCleared) {
-            fetch('/clear_session', {
-                method: 'POST'
-            })
-            .then(response => {
-                if (response.ok) {
-                    sessionCleared = true;
-                } else {
-                    console.error('Failed to clear the session.');
-                }
-            })
-            .catch(error => {
-                console.error('Error clearing the session:', error);
-            });
-        }
+    function updateChatBox() {
+        const messages = conversationHistories[selectedPersonality] || [];
+        $('.chat-box').empty();
+        messages.forEach(msg => {
+            const messageClass = msg.type === 'user' ? 'message user' : 'message ai';
+            $('.chat-box').append('<div class="' + messageClass + '">' + msg.content + '</div>');
+        });
+        scrollToBottom();
     }
 
-    window.addEventListener('beforeunload', clearSession);
-    window.addEventListener('unload', clearSession);
-    
-    // $('.sidebar-item').click(function() {
-    //     selectedPersonality = $(this).data('personality');
-    //     $('.sidebar-item').removeClass('active');
-    //     $(this).addClass('active');
-    //     $('.chat-box').empty();
-    //     $('.chat-title').text(selectedPersonality);
-    //     scrollToBottom();
-    // });
+    function loadUserChats() {
+        $.get('/load_chats', { user_id: currentUserID }, function (response) {
+            if (response.error) {
+                console.error(response.error);
+                return;
+            }
+            conversationHistories = response;
+            updateChatBox();
+        });
+    }
 
-    $('.sidebar-item').click(function() {
+    $('.sidebar-item').click(function () {
         selectedPersonality = $(this).data('personality');
-        console.log(selectedPersonality);
-        
         $('.sidebar-item').removeClass('active');
         $(this).addClass('active');
-        $('.chat-box').empty();
         $('.chat-title').text(selectedPersonality);
-        scrollToBottom();
-
-        $.ajax({
-            url: 'http://localhost:5002/reset_conversation',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ user_id: currentUserID }),
-            success: function() {
-                console.log("Conversation reset successfully.");
-            },
-            error: function(error) {
-                console.error("Error resetting conversation:", error);
-            }
-        });
+        updateChatBox();
     });
-    
-    $('.message-form').on('submit', function(e) {
+
+    $('.message-form').on('submit', function (e) {
         e.preventDefault();
         let userInput = $('#user_input').val();
         $('#user_input').val('');
         if (userInput.trim() !== '') {
-            $('.chat-box').append('<div class="message user">' + userInput + '</div>');
-            scrollToBottom();
-            $.post('/get_response', { user_input: userInput, personality: selectedPersonality }, function(response) {
-                $('.chat-box').append('<div class="message ai">' + response + '</div>');
-                scrollToBottom();
+            let userMessage = { type: 'user', content: userInput };
+            if (!conversationHistories[selectedPersonality]) {
+                conversationHistories[selectedPersonality] = [];
+            }
+            conversationHistories[selectedPersonality].push(userMessage);
+            updateChatBox();
+            $.post('/get_response', { user_input: userInput, personality: selectedPersonality }, function (response) {
+                let aiMessage = { type: 'ai', content: response };
+                conversationHistories[selectedPersonality].push(aiMessage);
+                updateChatBox();
             });
-            // $.post('/get_response', { user_input: userInput }, function(response) {
-            //     $('.chat-box').append('<div class="message ai">' + response + '</div>');
-            // });
         }
+    });
+
+    loadUserChats(); // Load chats when the document is ready
+
+    // Function to show the modal
+    function showModal() {
+        $('#confirmation-modal').show();
+    }
+
+    // Function to hide the modal
+    function hideModal() {
+        $('#confirmation-modal').hide();
+    }
+
+    // Click handler for "Clear Chat" button
+    $('#clear-chat').click(function () {
+        showModal();
+    });
+
+    // Click handler for "No" button in modal
+    $('#cancel-clear').click(function () {
+        hideModal();
+    });
+
+    // Click handler for "Yes" button in modal
+    $('#confirm-clear').click(function () {
+        // Make a POST request to the clear chat route
+        $.post('/clear_chats', { user_id: currentUserID }, function (response) {
+            if (response.status === "success") {
+                // Clear the chat histories from the front end
+                conversationHistories = {};
+                updateChatBox();
+                hideModal();
+            } else {
+                console.error('Failed to clear chats:', response.error);
+            }
+        });
+    });
+
+    // Click handler for close button in modal
+    $('.close').click(function () {
+        hideModal();
     });
 });
