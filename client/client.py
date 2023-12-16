@@ -82,7 +82,7 @@ def get_ai_response(user_input, user_id, personality):
             conversation = {"user_id": user_id, "history": []}
             collection.insert_one(conversation)
         logging.info([m for m in conversation["history"]])
-        history = [HumanMessage(content=m) if "HumanMessage" in m else SystemMessage(content=m) for m in conversation["history"]]
+        history = [SystemMessage(content=m) if "content" in m else HumanMessage(content=m) for m in conversation["history"]]
         history.append(HumanMessage(content=user_input))
         collection.update_one({"user_id": user_id}, {"$push": {"history": user_input}})
 
