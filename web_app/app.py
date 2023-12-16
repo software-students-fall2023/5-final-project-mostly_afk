@@ -25,6 +25,8 @@ Session(app)
 # Connect to MongoDB
 client = MongoClient("database", 27017)
 db = client["database"]
+collection = db["chat"]
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -32,19 +34,33 @@ def index():
     Render index page.
     """
     if "messages" not in session:
-        session["messages"] = []
+        session["messages"] = {}
 
     if "user_id" not in session:
         return render_template("login.html")
-    
+
     else:
+        current_personality = session.get("current_personality", "default_personality")
         if request.method == "POST":
             user_input = request.form.get("user_input")
             user_id = session.get("user_id")
-            session["messages"].append({"type": "User", "content": user_input})
+            if current_personality not in session["messages"]:
+                session["messages"][current_personality] = []
+
+            session["messages"][current_personality].append(
+                {"type": "User", "content": user_input}
+            )
             logging.info(user_id)
-            return render_template("index.html", messages=session["messages"], user_id=user_id)
-        return render_template("index.html", messages=session["messages"], user_id=session.get("user_id"))
+            return render_template(
+                "index.html",
+                messages=session["messages"][current_personality],
+                user_id=user_id,
+            )
+
+        messages = session["messages"].get(current_personality, [])
+        return render_template(
+            "index.html", messages=messages, user_id=session.get("user_id")
+        )
 
 
 @app.route("/get_response", methods=["POST"])
@@ -55,17 +71,27 @@ def get_response():
     user_input = request.form.get("user_input")
     personality = request.form.get("personality", "helpful")
     user_id = session["user_id"]
+    session[
+        "current_personality"
+    ] = personality  # Save the current personality in session
+
     logging.info("get_response: " + user_id)
     try:
         response = requests.post(
-            "http://client:5002/get_response", json={"prompt": user_input, "personality": personality, "user_id": user_id}, timeout=60
+            "http://client:5002/get_response",
+            json={"prompt": user_input, "personality": personality, "user_id": user_id},
+            timeout=60,
         )
-        # response = requests.post(
-        #     "http://client:5002/reset_conversation", json={"prompt": user_input, "personality": personality, "user_id": user_id}, timeout=60
-        # )
         response.raise_for_status()
         ai_response = response.json().get("response")
-        session["messages"].append({"type": "Assistant", "content": ai_response})
+        if "messages" not in session:
+            session["messages"] = {}
+        if personality not in session["messages"]:
+            session["messages"][personality] = []
+
+        session["messages"][personality].append(
+            {"type": "Assistant", "content": ai_response}
+        )
         return jsonify(ai_response)
     except RequestException as e:
         logging.error("Error making the request to the client: %s", str(e))
@@ -79,6 +105,42 @@ def get_response():
         )
 
 
+@app.route("/load_chats", methods=["GET"])
+def load_chats():
+    user_id = request.args.get("user_id")
+    if not user_id:
+        return jsonify({"error": "User ID is required"}), 400
+
+    user_chats = {}
+    chat_records = collection.find({"conversation_key": {"$regex": f"^{user_id}_"}})
+
+    for record in chat_records:
+        personality = record["conversation_key"].split("_")[1]
+        user_chats[personality] = []
+        for message in record["history"]:
+            # Format the message for the frontend
+            msg_type = "user" if message["type"] == "User" else "ai"
+            user_chats[personality].append(
+                {"type": msg_type, "content": message["content"]}
+            )
+
+    return jsonify(user_chats)
+
+
+@app.route("/clear_chats", methods=["POST"])
+def clear_chats():
+    user_id = request.form.get("user_id")
+    if not user_id:
+        return jsonify({"error": "User ID is required"}), 400
+
+    # Clear all chats associated with the user_id
+    result = collection.delete_many({"conversation_key": {"$regex": f"^{user_id}_"}})
+    if result.deleted_count > 0:
+        return jsonify({"status": "success"})
+    else:
+        return jsonify({"error": "Failed to clear chats"}), 500
+
+
 @app.route("/clear_session", methods=["POST"])
 def clear_session():
     """
@@ -90,8 +152,6 @@ def clear_session():
     except RuntimeError as e:
         logging.error("Error clearing session: %s", str(e))
         return jsonify({"error": "An error occurred while clearing the session"}), 500
-
-
 
 
 # Login, Sign Up Functionality
@@ -168,7 +228,7 @@ def login():
     return render_template("login.html")
 
 
-#This function is the backend of the login functionality from the login.html file
+# This function is the backend of the login functionality from the login.html file
 @app.route("/login_auth", methods=["POST"])
 def login_auth():
     """Route for login authentication"""
@@ -197,6 +257,7 @@ def login_auth():
         errors.append("Invalid username or password!")
         return render_template("login.html", errors=errors)
     return None
+
 
 @app.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
@@ -237,6 +298,7 @@ def logout():
     session.pop("user_id", None)
     clear_session()
     return redirect(url_for("login"))
+
 
 if __name__ == "__main__":
     app.run(debug=True)

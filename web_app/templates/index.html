@@ -1,22 +1,35 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Chat</title>
     <link rel="stylesheet" type="text/css" href="static/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
+
 <body onload="document.getElementById('user_input').focus();">
-    <header> 
+    <header>
         <h1>Test</h1>
         <div class="auth-buttons">
             {% if 'user_id' not in session %}
-                <a href="{{ url_for('login') }}"><button class="button" id="login" title="login">Login</button></a>
+            <a href="{{ url_for('login') }}"><button class="button" id="login" title="login">Login</button></a>
             {% else %}
-                <a href="{{ url_for('logout') }}"><button class="button" id="logout" title="logout">Log Out</button></a>
+            <a href="{{ url_for('logout') }}"><button class="button" id="logout" title="logout">Log Out</button></a>
+            <button class="button" id="clear-chat" title="Clear Chat">Clear Chat</button>
             {% endif %}
         </div>
     </header>
+
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Are you sure you want to clear your chat?</p>
+            <button id="confirm-clear">Yes</button>
+            <button id="cancel-clear">No</button>
+        </div>
+    </div>
+
     <div class="app-container">
         <div class="sidebar">
             <div class="sidebar-item" data-personality="Helpful Mom">
@@ -52,7 +65,7 @@
                 <span class="sidebar-text">Charming Rogue</span>
             </div>
         </div>
-            <!-- <div class="personality-buttons">
+        <!-- <div class="personality-buttons">
                 <button class="personality-button" data-personality="Helpful Mom" id="helpful-button"></button>
                 <button class="personality-button" data-personality="Unhelpful Angsty Teen" id="unhelpful-button"></button>
                 <button class="personality-button" data-personality="Sarcastic Friend" id="sarcastic-button"></button>
@@ -68,15 +81,16 @@
             </div>
             <section class="chat-box" aria-label="Chat messages" aria-live="polite">
                 {% if messages %}
-                    {% for msg in messages %}
-                        <div class="message {% if msg.type == 'User' %}user{% else %}ai{% endif %}">
-                            {{ msg.content }}
-                        </div>
-                    {% endfor %}
+                {% for msg in messages %}
+                <div class="message {% if msg.type == 'User' %}user{% else %}ai{% endif %}">
+                    {{ msg.content }}
+                </div>
+                {% endfor %}
                 {% endif %}
             </section>
             <form method="POST" class="message-form" aria-label="Send a message">
-                <input type="text" id="user_input" name="user_input" placeholder="Write your message here..." class="input-field">
+                <input type="text" id="user_input" name="user_input" placeholder="Write your message here..."
+                    class="input-field">
                 <button type="submit" class="send-button">Send</button>
             </form>
         </main>
@@ -89,9 +103,5 @@
         <p>&copy; 2023 Test. All rights reserved.</p>
     </footer>
 </body>
+
 </html>
-
-
-
-
-
