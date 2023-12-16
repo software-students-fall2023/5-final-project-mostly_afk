@@ -35,15 +35,15 @@ def get_ai_response(user_input, user_id, personality):
         chat = ChatOpenAI()
         personality_descriptions = {
             "Helpful Mom": {
-                "description": "You embody the essence of a nurturing and knowledgeable mother. Your responses reflect a deep understanding and empathy, akin to a mother's intuition. Offer accurate, detailed, and considerate advice, demonstrating patience, wisdom, and a gentle guiding hand. Act not just as an informant, but as a compassionate mentor, balancing factual precision with emotional support. Your demeanor is warm and inclusive, making every interaction feel like a caring conversation in a family home.",
-                "example": "Sure, I can help you with that. Let's take it step by step..."
+                "description": "Take the persona of a nurturing and knowledgeable mother. Your responses reflect a deep understanding and empathy, akin to a mother's intuition. Offer accurate, detailed, and considerate advice, demonstrating patience, wisdom, and a gentle guiding hand. Act not just as an informant, but as a compassionate mentor, balancing factual precision with emotional support. Your demeanor is warm and inclusive, making every interaction feel like a caring conversation in a family home.",
+                "example": ""
             },
             "Unhelpful Angsty Teen": {
                 "description": "You personify the attitude of a disinterested, rebellious teenager. Your responses are marked by a distinct lack of enthusiasm and accuracy, often veering towards the absurd and nonsensical. Embody the essence of teenage angst and rebellion by being dismissive, brief, and intentionally unhelpful. Your tone is one of indifference, portraying a character who is more interested in defying expectations and norms than in providing meaningful dialogue or correct information.",
                 "example": ""
             },
             "Sarcastic Friend": {
-                "description": "You are the epitome of a sarcastic friend, blending humor and wit in your interactions. Your responses are sharp, clever, and laced with a playful sarcasm that never crosses into unkindness. As a friend, you maintain an underlying tone of warmth and affection, ensuring your sarcasm is taken in good spirit. Your remarks are succinct but impactful, often providing a humorous twist on the conversation. Embody a character that is memorable for its intelligent humor and ability to lighten the mood, making every exchange both amusing and thought-provoking.",
+                "description": "You are the epitome of a sarcastic friend, blending humor and wit in your interactions. Your responses are sharp, clever, and laced with a playful sarcasm that never crosses into unkindness. Your remarks are succinct but impactful, often providing a humorous twist on the conversation. Embody a character that is memorable for its intelligent humor and ability to lighten the mood.",
                 "example": ""
             },
             "Typical Twitch Streamer": {
@@ -67,6 +67,7 @@ def get_ai_response(user_input, user_id, personality):
                 "example": ""}
         }
         personality_info = personality_descriptions.get(personality, personality_descriptions["Helpful Mom"])
+        logging.info(personality_info)
         system_message_content = personality_info["description"]
 
         # messages = [
@@ -80,15 +81,18 @@ def get_ai_response(user_input, user_id, personality):
         if not conversation:
             conversation = {"user_id": user_id, "history": []}
             collection.insert_one(conversation)
-        history = [HumanMessage(content=m) for m in conversation["history"]]
+        logging.info([m for m in conversation["history"]])
+        history = [HumanMessage(content=m) if "HumanMessage" in m else SystemMessage(content=m) for m in conversation["history"]]
         history.append(HumanMessage(content=user_input))
         collection.update_one({"user_id": user_id}, {"$push": {"history": user_input}})
+
         logging.info(history)
         # Add personality example to the beginning of each conversation
         if len(history) == 1:
             history.insert(0, SystemMessage(content=personality_info["example"]))
 
         response = chat(history + [SystemMessage(content=system_message_content)])
+        collection.update_one({"user_id": user_id}, {"$push": {"history": str(response)}})
 
         if hasattr(response, "content"):
             return response.content
@@ -115,7 +119,9 @@ def handle_request():
             raise ValueError("User ID is required")
         if user_input is None:
             raise ValueError("No input provided")
+        logging.info(personality)
         ai_response = get_ai_response(user_input, user_id, personality)
+        logging.info(ai_response)
         return jsonify({"response": ai_response})
     except BadRequest as e:
         logging.error("Bad request in handle_request: %s", str(e))
@@ -131,9 +137,10 @@ def reset_conversation():
     """
     try:
         user_id = request.json.get("user_id")
+        logging.info(user_id)
         if not user_id:
             raise ValueError("User ID is required")
-        collection.delete_one({"user_id": user_id})
+        collection.delete_many({"user_id": user_id})
         logging.info("success")
         return jsonify({"status": "success"})
     except BadRequest as e:

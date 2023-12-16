@@ -36,10 +36,9 @@ $(document).ready(function() {
     //     scrollToBottom();
     // });
 
-    $('.sidebar-item').click(function(currentUserID) {
+    $('.sidebar-item').click(function() {
         selectedPersonality = $(this).data('personality');
         console.log(selectedPersonality);
-        userId = currentUserID;
         
         $('.sidebar-item').removeClass('active');
         $(this).addClass('active');
@@ -51,7 +50,7 @@ $(document).ready(function() {
             url: 'http://localhost:5002/reset_conversation',
             type: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({ user_id: userId }),
+            data: JSON.stringify({ user_id: currentUserID }),
             success: function() {
                 console.log("Conversation reset successfully.");
             },

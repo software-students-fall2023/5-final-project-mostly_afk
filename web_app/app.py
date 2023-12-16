@@ -42,9 +42,9 @@ def index():
             user_input = request.form.get("user_input")
             user_id = session.get("user_id")
             session["messages"].append({"type": "User", "content": user_input})
+            logging.info(user_id)
             return render_template("index.html", messages=session["messages"], user_id=user_id)
-        user_id = session.get("user_id")
-        return render_template("index.html", messages=session["messages"], user_id=user_id)
+        return render_template("index.html", messages=session["messages"], user_id=session.get("user_id"))
 
 
 @app.route("/get_response", methods=["POST"])
@@ -55,6 +55,7 @@ def get_response():
     user_input = request.form.get("user_input")
     personality = request.form.get("personality", "helpful")
     user_id = session["user_id"]
+    logging.info("get_response: " + user_id)
     try:
         response = requests.post(
             "http://client:5002/get_response", json={"prompt": user_input, "personality": personality, "user_id": user_id}, timeout=60
@@ -148,7 +149,6 @@ def signup():
                 "username": username,
                 "password": password_hash,
                 "email": email,
-                "midi_files": [],
             }
         )
 
