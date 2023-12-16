@@ -22,7 +22,6 @@ mongomock = "*"
 pytest-flask = "*"
 openai = "*"
 langchain = "==0.0.348"
-pymongo = "*"
 
 [dev-packages]
 
