@@ -27,15 +27,39 @@ $(document).ready(function() {
     window.addEventListener('beforeunload', clearSession);
     window.addEventListener('unload', clearSession);
     
+    // $('.sidebar-item').click(function() {
+    //     selectedPersonality = $(this).data('personality');
+    //     $('.sidebar-item').removeClass('active');
+    //     $(this).addClass('active');
+    //     $('.chat-box').empty();
+    //     $('.chat-title').text(selectedPersonality);
+    //     scrollToBottom();
+    // });
+
     $('.sidebar-item').click(function() {
         selectedPersonality = $(this).data('personality');
+        console.log(selectedPersonality);
+        
         $('.sidebar-item').removeClass('active');
         $(this).addClass('active');
         $('.chat-box').empty();
         $('.chat-title').text(selectedPersonality);
         scrollToBottom();
-    });
 
+        $.ajax({
+            url: 'http://localhost:5002/reset_conversation',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ user_id: currentUserID }),
+            success: function() {
+                console.log("Conversation reset successfully.");
+            },
+            error: function(error) {
+                console.error("Error resetting conversation:", error);
+            }
+        });
+    });
+    
     $('.message-form').on('submit', function(e) {
         e.preventDefault();
         let userInput = $('#user_input').val();
