@@ -34,3 +34,13 @@ jobs:
         run: |
           cd web_app/tests
           pipenv run python -m pytest
+        env: 
+          APP_SECRET_KEY: ${{ secrets.APP_SECRET_KEY}}
+
+      - name: Coverage Report
+        run: |
+          cd web_app/tests
+          pipenv run python -m coverage run -m pytest
+          pipenv run python -m coverage report --include=*.py --fail-under=80
+        env: 
+          APP_SECRET_KEY: ${{ secrets.APP_SECRET_KEY}}
