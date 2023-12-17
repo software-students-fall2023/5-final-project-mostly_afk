@@ -34,3 +34,11 @@ jobs:
         run: |
           cd client/tests
           pipenv run python -m pytest -s
+        
+      - name: Coverage Report
+        run: |
+          cd client/tests
+          pipenv run python -m coverage run -m pytest
+          pipenv run python -m coverage report --include=*.py --fail-under=80
+        env: 
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY}}

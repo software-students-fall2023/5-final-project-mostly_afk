@@ -27,12 +27,20 @@ $(document).ready(function () {
         });
     }
 
-    $('.sidebar-item').click(function () {
-        selectedPersonality = $(this).data('personality');
-        $('.sidebar-item').removeClass('active');
-        $(this).addClass('active');
+    function selectPersonality(personality) {
+        selectedPersonality = personality;
+        $('.sidebar-item, .dropdown-content a').removeClass('active');
+        $('.sidebar-item, .dropdown-content a').filter(function() {
+            return $(this).data('personality') === personality;
+        }).addClass('active');
         $('.chat-title').text(selectedPersonality);
         updateChatBox();
+        $('.dropdown-content').hide(); // Hide the dropdown content
+    }
+
+    $('.sidebar-item, .dropdown-content a').click(function () {
+        let personality = $(this).data('personality');
+        selectPersonality(personality);
     });
 
     $('.message-form').on('submit', function (e) {
@@ -56,6 +64,24 @@ $(document).ready(function () {
 
     loadUserChats(); // Load chats when the document is ready
 
+    $('.dropdown .dropbtn').click(function() {
+        $(this).next('.dropdown-content').show();
+    });
+
+    $('.user-dropdown .dropbtn-menu').click(function() {
+        $(this).next('.dropdown-content-user').show();
+    });
+
+    $(document).click(function(event) {
+        if (!$(event.target).closest('.dropdown, .user-dropdown').length) {
+            $('.dropdown-content, .dropdown-content-user').hide();
+        }
+    });
+
+    $('.dropdown-content, .dropdown-content-user').click(function(e) {
+        e.stopPropagation();
+    });
+
     // Function to show the modal
     function showModal() {
         $('#confirmation-modal').show();
@@ -78,10 +104,8 @@ $(document).ready(function () {
 
     // Click handler for "Yes" button in modal
     $('#confirm-clear').click(function () {
-        // Make a POST request to the clear chat route
         $.post('/clear_chats', { user_id: currentUserID }, function (response) {
             if (response.status === "success") {
-                // Clear the chat histories from the front end
                 conversationHistories = {};
                 updateChatBox();
                 hideModal();
