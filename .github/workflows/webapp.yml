@@ -43,4 +43,4 @@ jobs:
       #     pipenv run python -m coverage run -m pytest
       #     pipenv run python -m coverage report --include=*.py --fail-under=80
       #   env: 
-      #     APP_SECRET_KEY: ${{ secrets.APP_SECRET_KEY}}
+      #     APP_SECRET_KEY: 
