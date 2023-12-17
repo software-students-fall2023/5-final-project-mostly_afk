@@ -259,35 +259,42 @@ def login_auth():
     return None
 
 
-@app.route("/forgot_password", methods=["GET", "POST"])
+@app.route('/forgot_password', methods = ['GET','POST'])
 def forgot_password():
-    """Renders the forgot password page"""
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        confirm_password = request.form["confirm_password"]
-        email = request.form["email"]
-        errors = []
-        user = db.users.find_one({"email": email, "username": username})
+    if request.method == 'POST':
+            username = request.form['username']
+            password = request.form['password']
+            confirm_password = request.form['confirm_password']
+            email = request.form['email']
+            errors = []
+            user = db.users.find_one({'email': email, 'username':username})
 
-        if not user:
-            errors.append("Invalid username or email!")
+            if not user:
+                errors.append("Invalid username or email!")
+            
+            if len(password) < 8 & len(password) > 20:
+                errors.append("Password must be between 8 and 20 characters long!")
+            
+            if not any(char.isdigit() for char in password):
+                errors.append("Password should have at least one number!")
+            
+            if not any(char.isalpha() for char in password):
+                errors.append("Password should have at least one alphabet!")
+            
+            if not confirm_password == password:
+                errors.append("Passwords do not match!")
 
-        if not 8 <= len(password) <= 20:
-            errors.append("Password must be between 8 and 20 characters long!")
-
-        if not any(char.isdigit() for char in password):
-            errors.append("Password should have at least one number!")
-
-        if not any(char.isalpha() for char in password):
-            errors.append("Password should have at least one alphabet!")
-
-        if not confirm_password == password:
-            errors.append("Passwords do not match!")
-
-        if errors:
-            return render_template("forgot_password.html", errors=errors)
-    return None
+            if errors:
+                return render_template('forgot_password.html', errors=errors)
+            
+            else:
+                password_hash = generate_password_hash(password)
+                filter = {'email': email, 'username':username}      
+                update = {'$set': {'password': password_hash}}
+                db.users.update_one(filter, update)                   
+                return redirect(url_for('login'))
+            
+    return render_template('forgot_password.html')
 
 
 # Here we have another route, if the user decides to logout,
