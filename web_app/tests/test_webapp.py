@@ -315,42 +315,73 @@ class Tests:
         
 
     # @patch('web_app.app.user_collection.find_one')
-    # def test_forgot_password_post_invalid_input(self, client):
+    # def test_forgot_password_short_password(self, mock_find_one, client):
     #     """Test forgot password invalid input"""
-    #     response = client.post(
-    #         "/forgot_password",
-    #         data={
-    #             "username": "invalid_username",
-    #             "password": "short",
-    #             "confirm_password": "password_mismatch",
-    #             "email": "invalid_email@example.com",
-    #         },
-    #     )
+    #     mock_find_one.return_value = {'email': "email@email.com", 'username': "user"}
+
+    #     user = {
+    #         "username": "user",
+    #         "password": "Pass1",
+    #         "confirm_password": "Pass1",
+    #         "email": "email@email.com",
+    #     }
+
+    #     response = client.post("/forgot_password", data=user)
 
     #     assert response.status_code == 200
-
-    #     assert b"Invalid username or email!" in response.data
     #     assert b"Password must be between 8 and 20 characters long!" in response.data
-    #     assert b"Password should have at least one number!" in response.data
 
-    # @patch('web_app.app.user_collection.find_one')
-    # def test_forgot_password_post_valid_input(self, client):
-    #     """Test forgot password valid input"""
-    #     valid_username = "valid_username"
-    #     valid_password = "ValidPassword123"
-    #     valid_email = "valid_email@example.com"
+    @patch('web_app.app.user_collection.find_one')
+    def test_forgot_password_no_digit(self, mock_find_one, client):
+        """Test forgot password invalid input"""
+        mock_find_one.return_value = {'email': "email@email.com", 'username': "user"}
 
-    #     response = client.post(
-    #         "/forgot_password",
-    #         data={
-    #             "username": valid_username,
-    #             "password": valid_password,
-    #             "confirm_password": valid_password,
-    #             "email": valid_email,
-    #         },
-    #     )
+        user = {
+            "username": "user",
+            "password": "Password",
+            "confirm_password": "Password",
+            "email": "email@email.com",
+        }
 
-    #     assert response.status_code == 200 
+        response = client.post("/forgot_password", data=user)
+
+        assert response.status_code == 200
+        assert b"Password should have at least one number!" in response.data
+
+    @patch('web_app.app.user_collection.find_one')
+    def test_forgot_password_no_alpha(self, mock_find_one, client):
+        """Test forgot password invalid input"""
+        mock_find_one.return_value = {'email': "email@email.com", 'username': "user"}
+
+        user = {
+            "username": "user",
+            "password": "12345678",
+            "confirm_password": "12345678",
+            "email": "email@email.com",
+        }
+
+        response = client.post("/forgot_password", data=user)
+
+        assert response.status_code == 200
+        assert b"Password should have at least one alphabet!" in response.data
+
+    @patch('web_app.app.user_collection.find_one')
+    def test_forgot_password_unmatch(self, mock_find_one, client):
+        """Test forgot password invalid input"""
+        mock_find_one.return_value = {'email': "email@email.com", 'username': "user"}
+
+        user = {
+            "username": "user",
+            "password": "Password12",
+            "confirm_password": "12Password",
+            "email": "email@email.com",
+        }
+
+        response = client.post("/forgot_password", data=user)
+
+        assert response.status_code == 200
+        assert b"Passwords do not match!" in response.data
+    
 
     def test_logout(self, client):
         """Test logout"""
