@@ -584,39 +584,3 @@ footer p {
         right: 0;
     }
 }
-
-.dot-flashing {
-    margin: 0 auto;
-    width: 16px;
-    height: 4px;
-    border-radius: 4px;
-    background-color: #929292;
-    color: #929292;
-    text-align: center;
-    animation: flashing 1.5s infinite linear;
-    display: flex;
-    justify-content: space-between;
-}
-
-.dot-flashing::before,
-.dot-flashing::after {
-    content: '';
-    display: inline-block;
-    width: 100%;
-    height: 100%;
-    background: inherit;
-    color: inherit;
-    border-radius: inherit;
-}
-
-@keyframes flashing {
-
-    0%,
-    100% {
-        opacity: 0;
-    }
-
-    50% {
-        opacity: 1;
-    }
-}

@@ -54,27 +54,15 @@ $(document).ready(function () {
             }
             conversationHistories[selectedPersonality].push(userMessage);
             updateChatBox();
-            showTypingIndicator();
             $.post('/get_response', { user_input: userInput, personality: selectedPersonality }, function (response) {
-                hideTypingIndicator();
                 let aiMessage = { type: 'ai', content: response };
                 conversationHistories[selectedPersonality].push(aiMessage);
                 updateChatBox();
-            }).fail(function () {
-                hideTypingIndicator();
             });
         }
     });
 
     loadUserChats(); // Load chats when the document is ready
-
-    function showTypingIndicator() {
-        $('#typing-indicator').show();
-    }
-
-    function hideTypingIndicator() {
-        $('#typing-indicator').hide();
-    }
 
     $('.dropdown .dropbtn').click(function () {
         $(this).next('.dropdown-content').show();
