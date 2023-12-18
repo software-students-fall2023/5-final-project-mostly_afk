@@ -11,6 +11,7 @@ from flask_session import Session
 from requests.exceptions import RequestException
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
+import mongomock
 
 load_dotenv()
 
@@ -23,10 +24,17 @@ Session(app)
 
 
 # Connect to MongoDB
-client = MongoClient("database", 27017)
-db = client["database"]
-collection = db["chat"]
+try:
+    client = MongoClient("database", 27017)
+    db = client["database"]
+    collection = db["chat"]
+    user_collection = db["users"]
+except Exception as e:
+    print(e)
 
+# def get_db_client(use_mock_db=False):
+#     if use_mock_db:
+#         return mongomock.MongoClient()
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -172,27 +180,27 @@ def signup():
         errors = []
 
         # This checks if there is already a user that has this exact username
-        if db.users.find_one({"username": username}):
+        if user_collection.find_one({"username": username}):
             errors.append("Username already exists!")
 
         # This checks if there is already a user that has this exact email
-        if db.users.find_one({"email": email}):
+        elif user_collection.find_one({"email": email}):
             errors.append("Email already used, try another or try logging in!")
 
         # This checks if the password is in between 8-20 characters
-        if not 8 <= len(password) <= 20:
+        elif not 8 <= len(password) <= 20:
             errors.append("Password must be between 8 and 20 characters long!")
 
         # This checks if the password does not have any numbers
-        if not any(char.isdigit() for char in password):
+        elif not any(char.isdigit() for char in password):
             errors.append("Password should have at least one number!")
 
         # This checks if the password does not have any alphabets
-        if not any(char.isalpha() for char in password):
+        elif not any(char.isalpha() for char in password):
             errors.append("Password should have at least one alphabet!")
 
         # This checks if the password and the confirm password do not match
-        if not confirm_password == password:
+        elif not confirm_password == password:
             errors.append("Passwords do not match!")
 
         # If any errors, it will re-render the signup.html page and allow the user to try again
@@ -203,7 +211,6 @@ def signup():
         password_hash = generate_password_hash(password)
 
         # Here we insert their account details to the database
-        user_collection = db["users"]
         user_collection.insert_one(
             {
                 "username": username,
@@ -245,7 +252,7 @@ def login_auth():
         errors = []
 
         # Once inputted their username and password, check the database for existing users
-        user = db.users.find_one({"username": username})
+        user = user_collection.find_one({"username": username})
 
         # We provide the _id attribute of the user to the user_id in the session
         if user and check_password_hash(user["password"], password):
@@ -267,21 +274,21 @@ def forgot_password():
             confirm_password = request.form['confirm_password']
             email = request.form['email']
             errors = []
-            user = db.users.find_one({'email': email, 'username':username})
+            user = user_collection.find_one({'email': email, 'username':username})
 
             if not user:
                 errors.append("Invalid username or email!")
             
-            if len(password) < 8 & len(password) > 20:
+            elif len(password) < 8 & len(password) > 20:
                 errors.append("Password must be between 8 and 20 characters long!")
             
-            if not any(char.isdigit() for char in password):
+            elif not any(char.isdigit() for char in password):
                 errors.append("Password should have at least one number!")
             
-            if not any(char.isalpha() for char in password):
+            elif not any(char.isalpha() for char in password):
                 errors.append("Password should have at least one alphabet!")
             
-            if not confirm_password == password:
+            elif not confirm_password == password:
                 errors.append("Passwords do not match!")
 
             if errors:
@@ -291,7 +298,7 @@ def forgot_password():
                 password_hash = generate_password_hash(password)
                 filter = {'email': email, 'username':username}      
                 update = {'$set': {'password': password_hash}}
-                db.users.update_one(filter, update)                   
+                user_collection.update_one(filter, update)                   
                 return redirect(url_for('login'))
             
     return render_template('forgot_password.html')
