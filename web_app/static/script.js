@@ -30,7 +30,7 @@ $(document).ready(function () {
     function selectPersonality(personality) {
         selectedPersonality = personality;
         $('.sidebar-item, .dropdown-content a').removeClass('active');
-        $('.sidebar-item, .dropdown-content a').filter(function() {
+        $('.sidebar-item, .dropdown-content a').filter(function () {
             return $(this).data('personality') === personality;
         }).addClass('active');
         $('.chat-title').text(selectedPersonality);
@@ -54,31 +54,43 @@ $(document).ready(function () {
             }
             conversationHistories[selectedPersonality].push(userMessage);
             updateChatBox();
+            showTypingIndicator();
             $.post('/get_response', { user_input: userInput, personality: selectedPersonality }, function (response) {
+                hideTypingIndicator();
                 let aiMessage = { type: 'ai', content: response };
                 conversationHistories[selectedPersonality].push(aiMessage);
                 updateChatBox();
+            }).fail(function () {
+                hideTypingIndicator();
             });
         }
     });
 
     loadUserChats(); // Load chats when the document is ready
 
-    $('.dropdown .dropbtn').click(function() {
+    function showTypingIndicator() {
+        $('#typing-indicator').show();
+    }
+
+    function hideTypingIndicator() {
+        $('#typing-indicator').hide();
+    }
+
+    $('.dropdown .dropbtn').click(function () {
         $(this).next('.dropdown-content').show();
     });
 
-    $('.user-dropdown .dropbtn-menu').click(function() {
+    $('.user-dropdown .dropbtn-menu').click(function () {
         $(this).next('.dropdown-content-user').show();
     });
 
-    $(document).click(function(event) {
+    $(document).click(function (event) {
         if (!$(event.target).closest('.dropdown, .user-dropdown').length) {
             $('.dropdown-content, .dropdown-content-user').hide();
         }
     });
 
-    $('.dropdown-content, .dropdown-content-user').click(function(e) {
+    $('.dropdown-content, .dropdown-content-user').click(function (e) {
         e.stopPropagation();
     });
 
