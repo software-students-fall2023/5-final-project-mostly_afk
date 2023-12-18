@@ -5,9 +5,10 @@ from bson import ObjectId
 from werkzeug.security import generate_password_hash
 from requests.exceptions import RequestException
 from web_app.app import app
+from flask import url_for
 # from web_app.app import get_db_client
-import mongomock
-import pymongo
+# import mongomock
+# import pymongo
 
 @pytest.fixture
 def mock_db(monkeypatch):
@@ -113,6 +114,15 @@ class Tests:
 
         assert response.status_code == 500
         assert "error" in response.json
+
+    @patch('web_app.app.collection.find')
+    def test_load_chats_with_valid_user_id(self, mock_find, client):
+        """Test load chats route with valid user ID."""
+        mock_find.return_value = []
+        response = client.get("/load_chats?user_id=" + self.mock_user_id)
+
+        assert response.status_code == 200
+        assert isinstance(response.json, dict)
     
     def test_load_chats_without_user_id(self, client):
         response = client.get("/load_chats")
@@ -120,6 +130,15 @@ class Tests:
         assert response.status_code == 400
         assert "error" in response.json
     
+    @patch('web_app.app.collection.delete_many')
+    def test_clear_chats_no_chats_to_delete(self, mock_delete, client):
+        """Test clear chats with valid user ID but no chats to delete."""
+        mock_delete.return_value.deleted_count = 0
+        response = client.post("/clear_chats", data={"user_id": self.mock_user_id})
+
+        assert response.status_code == 500
+        assert response.json.get("error") == "Failed to clear chats"
+
     @patch('web_app.app.collection.delete_many')
     def test_clear_chats_valid_user_id(self, mock_delete, client):
         mock_delete.return_value.deleted_count = 1
@@ -150,6 +169,25 @@ class Tests:
         response = client.get("/signup")
         assert response.status_code == 200
         assert b"Sign Up" in response.data
+
+    @patch('web_app.app.user_collection.insert_one')
+    @patch('web_app.app.user_collection.find_one')
+    def test_signup_success(self, mock_find_one, mock_insert_one, client):
+        """Test successful user signup."""
+        mock_find_one.return_value = None
+        mock_insert_one.return_value = None
+
+        new_user = {
+            "username": "new_user",
+            "password": "Password123",
+            "confirm_password": "Password123",
+            "email": "new_user@email.com",
+        }
+
+        response = client.post("/signup", data=new_user)
+
+        assert response.status_code == 302
+        assert url_for("login") in response.headers["Location"]
 
     @patch('web_app.app.user_collection.find_one')
     def test_signup_with_existing_username(self, mock_find_one, client):
@@ -295,6 +333,25 @@ class Tests:
 
             assert response.status_code == 200
             assert b"Invalid username or password!" in response.data
+
+    @patch('web_app.app.user_collection.update_one')
+    @patch('web_app.app.user_collection.find_one')
+    def test_forgot_password_success(self, mock_find_one, mock_update_one, client):
+        """Test successful password reset in forgot password."""
+        mock_find_one.return_value = {'email': "email@email.com", 'username': "user"}
+        mock_update_one.return_value = None
+
+        user = {
+            "username": "user",
+            "password": "Password123",
+            "confirm_password": "Password123",
+            "email": "email@email.com",
+        }
+
+        response = client.post("/forgot_password", data=user)
+
+        assert response.status_code == 302
+        assert url_for("login") in response.headers["Location"]
 
     @patch('web_app.app.user_collection.find_one')
     def test_forgot_password_invalid_user(self, mock_find_one, client):
