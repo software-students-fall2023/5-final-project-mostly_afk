@@ -12,17 +12,17 @@
     <header>
         <h1>TikTalk</h1>
         <div class="user-dropdown">
-            <button class="dropbtn-menu"><span class="hamburger-icon">&#9776;</span></button> 
+            <button class="dropbtn-menu"><span class="hamburger-icon">&#9776;</span></button>
             <div class="dropdown-content-user">
                 {% if 'user_id' in session %}
-                    <a href="{{ url_for('logout') }}">Log Out</a>
-                    <a href="#" id="clear-chat">Clear All Chats</a>
+                <a href="{{ url_for('logout') }}">Log Out</a>
+                <a href="#" id="clear-chat">Clear All Chats</a>
                 {% else %}
-                    <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('login') }}">Login</a>
                 {% endif %}
             </div>
         </div>
-    </header>    
+    </header>
 
     <div id="confirmation-modal" class="modal">
         <div class="modal-content">

@@ -5,15 +5,16 @@ body {
     padding: 20px;
 }
 
-header{
-    padding-bottom:20px; 
+header {
+    padding-bottom: 20px;
 }
 
 .app-container {
     display: flex;
     height: 80vh;
     background-color: #ffffff;
-    margin: 0 auto; /* Updated margin */
+    margin: 0 auto;
+    /* Updated margin */
     border: 1px solid #ddd;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     max-width: 1200px;
@@ -130,7 +131,8 @@ header{
     border-bottom: 1px solid #e5e5e5;
     position: sticky;
     top: 0;
-    z-index: 200; /* higher than other elements */
+    z-index: 200;
+    /* higher than other elements */
     position: relative;
 }
 
@@ -344,33 +346,33 @@ footer p {
 }
 
 .dropbtn {
-    background-color: #007bff; 
-    color: white; 
-    padding: 10px 15px; 
-    font-size: 16px; 
-    border: none; 
-    cursor: pointer; 
-    width: 100%; 
-    text-align: left; 
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
-    transition: background-color 0.3s ease; 
-    display: flex; 
-    justify-content: space-between; 
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
 }
 
 .dropdown-icon {
-    font-size: 16px; 
-    color: white; 
+    font-size: 16px;
+    color: white;
 }
 
 .dropbtn:hover {
-    background-color: #0056b3; 
+    background-color: #0056b3;
 }
 
 .dropdown .dropdown-content {
-    width: calc(100% - 30px); 
-    left: 15px; 
+    width: calc(100% - 30px);
+    left: 15px;
 }
 
 .dropdown {
@@ -384,7 +386,7 @@ footer p {
     position: absolute;
     background-color: #f9f9f9;
     min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 300;
 }
 
@@ -394,10 +396,12 @@ footer p {
     text-decoration: none;
     display: block;
     text-align: left;
-    border-bottom: 1px solid #e5e5e5; 
+    border-bottom: 1px solid #e5e5e5;
 }
 
-.dropdown-content a:hover {background-color: #f1f1f1}
+.dropdown-content a:hover {
+    background-color: #f1f1f1
+}
 
 .dropdown:hover .dropdown-content {
     display: block;
@@ -405,11 +409,11 @@ footer p {
 
 @media (max-width: 600px) {
     .sidebar {
-        display: none; 
+        display: none;
     }
 
     .dropdown {
-        display: block; 
+        display: block;
     }
 }
 
@@ -422,9 +426,9 @@ footer p {
     cursor: pointer;
     transition: background-color 0.3s ease;
     font-size: 14px;
-    text-decoration: none; 
+    text-decoration: none;
     display: inline-block;
-    margin-right: 10px; 
+    margin-right: 10px;
 }
 
 .button:hover,
@@ -433,18 +437,18 @@ footer p {
 }
 
 #clear-chat {
-    background-color: #dc3545; 
+    background-color: #dc3545;
 }
 
 #clear-chat:hover,
 #clear-chat:focus {
-    background-color: #bd2130; 
+    background-color: #bd2130;
 }
 
 .auth-buttons {
     display: flex;
-    align-items: center; 
-    gap: 10px; 
+    align-items: center;
+    gap: 10px;
 }
 
 .content {
@@ -465,11 +469,11 @@ footer p {
 .content form {
     display: flex;
     flex-direction: column;
-    gap: 15px; 
+    gap: 15px;
 }
 
 .content form label {
-    margin-bottom: 5px; 
+    margin-bottom: 5px;
 }
 
 .content form input[type="text"],
@@ -536,8 +540,8 @@ footer p {
 }
 
 .hamburger-icon {
-    font-size: 24px; 
-    color: #007bff; 
+    font-size: 24px;
+    color: #007bff;
 }
 
 .user-dropdown {
@@ -552,7 +556,7 @@ footer p {
     right: 0;
     background-color: #f9f9f9;
     min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 300;
     border-radius: 5px;
 }
@@ -575,7 +579,7 @@ footer p {
 
 @media (max-width: 600px) {
     .user-dropdown {
-        position: absolute; 
+        position: absolute;
         top: 0;
         right: 0;
     }
