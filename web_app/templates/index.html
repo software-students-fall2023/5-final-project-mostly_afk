@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chat</title>
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body onload="document.getElementById('user_input').focus();">
+    <header>
+        <h1>TikTalk</h1>
+        <div class="user-dropdown">
+            <button class="dropbtn-menu"><span class="hamburger-icon">&#9776;</span></button>
+            <div class="dropdown-content-user">
+                {% if 'user_id' in session %}
+                <a href="{{ url_for('logout') }}">Log Out</a>
+                <a href="#" id="clear-chat">Clear All Chats</a>
+                {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Are you sure you want to clear your chat?</p>
+            <button id="confirm-clear">Yes</button>
+            <button id="cancel-clear">No</button>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-item" data-personality="Helpful Mom">
+                <img class="sidebar-icon" src="../static/images/helpful.png" alt="Helpful Mom">
+                <span class="sidebar-text">Helpful Mom</span>
+            </div>
+            <div class="sidebar-item" data-personality="Unhelpful Angsty Teen">
+                <img class="sidebar-icon" src="../static/images/unhelpful.png" alt="Unhelpful Angsty Teen">
+                <span class="sidebar-text">Unhelpful Angsty Teen</span>
+            </div>
+            <div class="sidebar-item" data-personality="Sarcastic Friend">
+                <img class="sidebar-icon" src="../static/images/sarcastic.png" alt="Sarcastic Friend">
+                <span class="sidebar-text">Sarcastic Friend</span>
+            </div>
+            <div class="sidebar-item" data-personality="Typical Twitch Streamer">
+                <img class="sidebar-icon" src="../static/images/emo.png" alt="Twitch Streamer">
+                <span class="sidebar-text">Typical Twitch Streamer</span>
+            </div>
+            <div class="sidebar-item" data-personality="Wise Old Wizard">
+                <img class="sidebar-icon" src="../static/images/wise.png" alt="Wise Old Wizard">
+                <span class="sidebar-text">Wise Old Wizard</span>
+            </div>
+            <div class="sidebar-item" data-personality="Tsundere">
+                <img class="sidebar-icon" src="../static/images/tsundere.png" alt="Tsundere">
+                <span class="sidebar-text">Tsundere</span>
+            </div>
+            <div class="sidebar-item" data-personality="Mysterious Vampire">
+                <img class="sidebar-icon" src="../static/images/vampire.png" alt="Mysterious Vampire">
+                <span class="sidebar-text">Mysterious Vampire</span>
+            </div>
+            <div class="sidebar-item" data-personality="Charming Rogue">
+                <img class="sidebar-icon" src="../static/images/charming.png" alt="Charming Rogue">
+                <span class="sidebar-text">Charming Rogue</span>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn">Personality Options <span class="dropdown-icon">&#9662;</span></button>
+            <div class="dropdown-content">
+                <a href="#" data-personality="Helpful Mom">Helpful Mom</a>
+                <a href="#" data-personality="Unhelpful Angsty Teen">Unhelpful Angsty Teen</a>
+                <a href="#" data-personality="Sarcastic Friend">Sarcastic Friend</a>
+                <a href="#" data-personality="Typical Twitch Streamer">Typical Twitch Streamer</a>
+                <a href="#" data-personality="Wise Old Wizard">Wise Old Wizard</a>
+                <a href="#" data-personality="Tsundere">Tsundere</a>
+                <a href="#" data-personality="Mysterious Vampire">Mysterious Vampire</a>
+                <a href="#" data-personality="Charming Rogue">Charming Rogue</a>
+            </div>
+        </div>
+        <main class="chat-container" role="main">
+            <div class="chat-header">
+                <div class="chat-title">Helpful Mom</div>
+            </div>
+            <section class="chat-box" aria-label="Chat messages" aria-live="polite">
+                {% if messages %}
+                {% for msg in messages %}
+                <div class="message {% if msg.type == 'User' %}user{% else %}ai{% endif %}">
+                    {{ msg.content }}
+                </div>
+                {% endfor %}
+                {% endif %}
+            </section>
+            <form method="POST" class="message-form" aria-label="Send a message">
+                <input type="text" id="user_input" name="user_input" placeholder="Write your message here..."
+                    class="input-field">
+                <button type="submit" class="send-button">Send</button>
+            </form>
+        </main>
+    </div>
+    <script type="text/javascript">
+        var currentUserID = "{{ user_id }}";
+    </script>
+    <script src="../static/script.js"></script>
+    <footer>
+        <p>&copy; 2023 Test. All rights reserved.</p>
+    </footer>
+</body>
+
+</html>
