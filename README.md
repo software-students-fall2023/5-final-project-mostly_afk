@@ -19,6 +19,10 @@ An exercise to put to practice software development teamwork, subsystem communic
 
 TikTalk is a creative web application that allows users to engage in conversations with a variety of AI chatbots, each boasting a unique personality, from a helpful mom to a mysterious vampire. The app features an intuitive chat interface, enabling users to select different AI personalities and view their chat histories and express themselves to all sorts of personalities!
 
+## Links to DockerHub Images: 
+- [Web App](https://hub.docker.com/r/angstisdocker/webapp)
+- [Client](https://hub.docker.com/r/angstisdocker/client)
+
 ## Setup Locally: 
 
 ### Prerequisites: 
